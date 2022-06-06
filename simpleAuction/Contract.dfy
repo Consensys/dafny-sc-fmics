@@ -46,6 +46,7 @@ trait {:termination false} Account {
 
         ensures balance == old(balance) + amount
         ensures sourceAccount.balance == old(sourceAccount.balance) - amount
+        ensures g <= gas - 1
 
         modifies this`balance, sourceAccount`balance
     {
@@ -63,7 +64,7 @@ trait {:termination false} Account {
 
         ensures msg.sender.balance == old(msg.sender.balance) - msg.value
         ensures balance == old(balance) + msg.value
-
+        ensures g <= gas - 1
         modifies this`balance, msg.sender`balance
     {
         g := transfer(msg.sender, msg.value, gas);

@@ -260,7 +260,7 @@ class SimpleAuctionRevertExternal extends Account {
             // can call this function again as part of the receiving call
             // before `send` returns.
             mapSum(pendingReturns, msg.sender);
-            assert this.balance >= amount;
+            assert this.balance >= amount; 
 
             mapResetKey(pendingReturns, msg.sender);
             pendingReturns := pendingReturns[msg.sender := 0];
