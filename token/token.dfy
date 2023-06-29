@@ -117,6 +117,8 @@ class Token extends Account {
         ensures GInv()
 
         modifies this`balances, this`totalAmount
+        decreases gas
+
     {
         //  Use lemma.
         mapAdd(balances, to, amount as nat);

@@ -17,7 +17,7 @@ include "../utils/NonNativeTypes.dfy"
 import opened NonNativeTypes
 
 /** Provide a balance. */
-trait {:termination false} Account { 
+trait /*{:termination false} */Account { 
     /** Balance of the account. */  
     var balance : uint256
 
@@ -34,5 +34,13 @@ class UserAccount extends Account {
         balance := initialBal;
         isContract := false;
     }
+}
+
+class GenericAccount extends Account {
+    constructor Havoc() {
+        balance := *;
+        isContract := *;
+    }
+    constructor(){}
 }
 
