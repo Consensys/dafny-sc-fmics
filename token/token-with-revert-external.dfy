@@ -367,7 +367,111 @@ class TokenRevertExternal extends Account {
             r := *;
         }
     }
+
+    // Implement external R/O calls to check how far can we go in breaking the CEI pattern in transfer()
+    // In transfer() we will only need to put some externalROCall version as CIE, and see when it breaks
+
+    // v0: dummy, needs no GInv()
+    method externalROCall0(gas: nat) returns (g: nat, r: Try<()>)
+    ensures g == 0 || g <= gas - 1
+    {
+        g := gas;
+        if gas >= 1 {
+            g := g - 1;
+            r := Success(());
+        }
+        r := Revert();
+    }
+    
+    //v1: possible external call with no GInv
+    method externalROCall1(gas: nat) returns (g: nat, r: Try<()>)
+    ensures g == 0 || g <= gas - 1
+    {
+        g := gas;
+        if gas >= 1 {
+            var k: nat := * ;
+            if k % 2 == 0 {
+                g, r := externalROCall1(g - 1);
+            } else {
+                g := g - 1;
+                r := Success(());
+            }
+        }
+        r := Revert();
+    }
+
+    //v2: the external call needs GInv
+    method externalROCall2(gas: nat) returns (g: nat, r: Try<()>)
+    requires GInv()
+    ensures GInv()
+    ensures g == 0 || g <= gas - 1
+    {
+        g := gas;
+        if gas >= 1 {
+            var k: nat := * ;
+            if k % 2 == 0 {
+                g, r := externalROCall2(g - 1);
+            } else {
+                g := g - 1;
+                r := Success(());
+            }
+        }
+        r := Revert();
+    }
+
+    //Full tree of external RO calls
+    method externalROCall3(gas: nat) returns (g: nat, r: Try<()>)
+        //requires GInv()
+        //ensures GInv()
+        ensures g == 0 ||  g <= gas - 1
+        modifies this
+        decreases gas
+    {
+        g := gas;
+        //  Havoc `k` to introduce non-determinism.
+        var k: nat := 2 ;
+        //  Depending on the value of k % 3, re-entrant call or not or another external call.
+        if k % 3 == 0 && g >= 1 {
+            //  re-entrant call to transfer.
+            var from: GenericAccount := new GenericAccount();
+            var to: GenericAccount := new GenericAccount();
+            var amount: uint256 := *;
+            var sender := new GenericAccount();
+            var value := *;
+            var msg := Msg(sender, value);
+            // assert (from.balance == to.balance);
+            // assert (from.balance == msg.value);
+            // assert (from.balance != to.balance);
+            // assert (from.balance != msg.value);
+            //g, r := transfer(from, to, amount, msg, g - 1);
+        } else if k % 3 == 1 && g >= 1 {
+            //  re-entrant call to mint.
+            var to := new GenericAccount();
+            var amount: uint256 := *;
+            var sender := new GenericAccount();
+            var value := *;
+            var msg: Msg := Msg(sender, value);
+            // assert (to.balance == msg.value);
+            // assert (to.balance != msg.value);
+            //g, r := mint(to, amount, msg, g - 1);
+        }
+        //  k % 3 == 2, no re-entrant call.
+        //  Possible new external call
+        var b:bool := *;
+        if b && g >= 1 {
+            //  external call makes an external call.
+            g, r := externalROCall3(g - 1);
+        } else {
+            //  external call does not make another external call.
+            g := if gas >= 1 then gas - 1 else 0;
+            r := *;
+        }
+    }
+
+
 }
+
+
 
 //  Helper functions
 
