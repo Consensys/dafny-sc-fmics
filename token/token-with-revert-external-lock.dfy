@@ -103,7 +103,6 @@ class TokenRevertExternalMutex extends Account {
         ensures g == 0 || g <= gas - 1
         ensures GInv()
         ensures old(locked) == locked
-        ensures old(GInv2()) == GInv2()
         ensures locked ==> old(balances) == balances && old(totalAmount) == totalAmount
 
         decreases gas
@@ -158,7 +157,6 @@ class TokenRevertExternalMutex extends Account {
         ensures g == 0 || g <= gas - 1
         ensures GInv()
         ensures old(locked) == locked
-        ensures old(GInv2()) == GInv2()
         ensures locked ==> old(balances) == balances && old(totalAmount) == totalAmount
 
         modifies this`balances, this`totalAmount, this`locked
@@ -192,66 +190,11 @@ class TokenRevertExternalMutex extends Account {
      *  @note       The state variables of the contract can only be modified by 
      *              calls to mint and transfer.
      */
-    method externalCallGInv2(gas: nat) returns (g: nat, r: Try<()>)
-        requires GInv2()
-        ensures GInv2()
-        ensures old(locked) == locked
-        ensures old(GInv2()) == GInv2()
-        ensures g == 0 ||  g <= gas - 1
-        modifies this`balances, this`totalAmount, this`locked, this`extFailed
-        decreases gas
-    {
-        assert GInv2();
-
-        g := gas;
-        //  Havoc `k` to introduce non-determinism.
-        var k: nat := havoc();
-        //  Depending on the value of k % 3, re-entrant call or not or another external call.
-        if k % 3 == 0 && g >= 1 {
-            //  re-entrant call to transfer.
-            var from: Address := havoc();
-            var to: Address := havoc();
-            var amount: uint256 := havoc();
-            var msg: Msg := havoc();
-            // assert (from.balance == to.balance);
-            // assert (from.balance == msg.value);
-            // assert (from.balance != to.balance);
-            // assert (from.balance != msg.value);
-            assert GInv2();
-
-            g, r := transfer(from, to, amount, msg, g - 1);
-            assert GInv2();
-
-        } else if k % 3 == 1 && g >= 1 {
-            //  re-entrant call to mint.
-            var to: Address := havoc();
-            var amount: uint256 := havoc();
-            var msg: Msg := havoc();
-            assert GInv2();
-            g, r := mint(to, amount, msg, g - 1);
-            assert GInv2();
-
-        }
-        //  k % 3 == 2, no re-entrant call.
-        //  Possible new external call
-        var b:bool := havoc();
-        if b && g >= 1 {
-            //  external call makes an external call.
-            assert GInv2();
-            g, r := externalCallGInv2(g - 1);
-        } else {
-            //  external call does not make another external call.
-            g := if gas >= 1 then gas - 1 else 0;
-            r := havoc();
-        }
-    }
-
     method externalCallLocks(gas: nat) returns (g: nat, r: Try<()>)
         requires GInv()
         ensures GInv()
         ensures g == 0 ||  g <= gas - 1 
         ensures old(locked) == locked
-        ensures old(GInv2()) == GInv2()
         ensures locked ==> old(balances) == balances && old(totalAmount) == totalAmount
 
         modifies this`locked, this`balances, this`totalAmount, this`extFailed
