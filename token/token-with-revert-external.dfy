@@ -42,9 +42,6 @@ class TokenRevertExternal extends Account {
     //  Track minted tokens.
     ghost var totalAmount: nat  
 
-    /** Whether the last external call failed or not. */
-    ghost var extFailed: bool
-
     /** 
      *  Contract invariant. 
      *  The total amount is preserved by each method call.
@@ -66,7 +63,6 @@ class TokenRevertExternal extends Account {
         balances := map[]; 
         balance := msg.value;
         totalAmount := 0;
-        extFailed := false;
     }
 
     /**
@@ -115,7 +111,6 @@ class TokenRevertExternal extends Account {
         //balances := balances[from := newAmount];
 
         assert g1 == 0 || g1 <= gas - 1;
-        extFailed := r1 == Revert();
         //  We can choose to propagate or not the failure of external call. Here choose not to.
         g, r := (if g1 >= 1 then g1 - 1 else 0), Success(());
     }  
@@ -157,7 +152,6 @@ class TokenRevertExternal extends Account {
         //var g1, r1 := externalCall(gas - 1);  // to.notify( from, amount );
 
         assert g1 == 0 || g1 <= gas - 1;
-        extFailed := r1 == Revert();
         //  We can choose to propagate or not the failure of external call. Here choose not to.
         g, r := (if g1 >= 1 then g1 - 1 else 0), Success(());
     }

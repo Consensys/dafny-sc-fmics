@@ -47,7 +47,7 @@ datatype State = State(
  *          Bidders can bid if their bid is higher than the current highest.
  *          The contract has a defined deadline for bidding. No bid should be allowed
  *          beyond that deadline. 
- *          Within now and `deadline`, bidders can bid, aand overbid others or themselves.
+ *          Within now and `deadline`, bidders can bid, and overbid others or themselves.
  *          After the deadline, every bidder, except the winner, can withdraw their bids.
  *          The highest bid is transfered to the beneficiary.
  *  
@@ -154,6 +154,7 @@ class SimpleAuctionRevert extends Account {
             && (if old(highestBidder) != None() && old(highestBidder.v) in old(pendingReturns) then var l := old(highestBidder.v); old(pendingReturns[l]) else 0) as nat + old(highestBid) as nat <= MAX_UINT256
             && !old(ended)
             && gas >= 2
+            && block.timestamp  <= auctionEndTime
         )
         //  On revert, state is not modified.
         ensures r.Revert? ==> states[|states| - 1] == states[|states| - 2]
@@ -171,6 +172,7 @@ class SimpleAuctionRevert extends Account {
             && (if highestBidder != None() && highestBidder.v in pendingReturns then pendingReturns[highestBidder.v] else 0) as nat + highestBid as nat <= MAX_UINT256
             && !ended
             && gas >= 2
+            && block.timestamp  <= auctionEndTime
         ) {
             states := states + [State(ended, highestBidder, pendingReturns.Keys, highestBid)];
             return dec0(gas), Revert();
@@ -220,6 +222,7 @@ class SimpleAuctionRevert extends Account {
 
         modifies this, msg.sender`balance
     {
+        g := gas;
         if !(
             && msg.sender in pendingReturns 
             && this != msg.sender
@@ -315,25 +318,20 @@ class SimpleAuctionRevert extends Account {
      */
     lemma mapAdd(m: map<Address, uint256>, k: Address, v: nat)
         requires (if k in m then m[k] else 0) as nat + v <= MAX_UINT256
-        //  m ++ [k, v] is m with the value at k incremented by v (0 is not in key)
-        //  sum(m ++ [k,v]) == sum(m) + v 
         ensures sum(m[k := ((if k in m then m[k] else 0) as nat + v) as uint256]) == sum(m) + v
 
     /**
-     *  Add a number to a map value.
+     *  Remove a number from a map value.
      *  
      *  @param  m   A map.
      *  @param  k   A key.
      *  @param  v   A value. 
      *
-     *  If the value `m` at key `k` is incremented by `v` then sum(m) is incremented by `v` too.
+     *  If the value at key `k` is incremented by `v` then sum(m) is incremented by `v` too.
      */
     lemma mapResetKey(m: map<Address, uint256>, k: Address)
         requires k in m
-        // requires (if k in m then m[k] else 0) as nat + v <= MAX_UINT256
-        //  m ++ [k, v] is m with the value at k incremented by v (0 is not in key)
-        //  sum(m ++ [k,v]) == sum(m) + v 
-        ensures sum(m[k := 0]) == sum(m) - old(m[k]) as nat
+        ensures sum(m[k := 0]) == sum(m) - m[k] as nat
 
     lemma mapSum(m: map<Address, uint256>, k: Address) 
         requires k in m 

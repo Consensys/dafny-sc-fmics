@@ -25,7 +25,7 @@ datatype Block = Block(timestamp: uint256, number: uint256)
 type Address = Account  
 
 /** Provide a balance. */
-trait {:termination false} Account { 
+trait Account {
     /** Balance of the account. */  
     var balance : uint256
 

@@ -43,8 +43,6 @@ class TokenRevertExternalMutex extends Account {
     //  Track minted tokens.
     ghost var totalAmount: nat  
 
-    /** Whether the last external call failed or not. */
-    ghost var extFailed: bool
 
     /** 
      *  Contract invariant. 
@@ -74,7 +72,6 @@ class TokenRevertExternalMutex extends Account {
         balance := msg.value;
         locked := false;
         totalAmount := 0;
-        extFailed := false;
     }
 
     /**
@@ -103,10 +100,10 @@ class TokenRevertExternalMutex extends Account {
         ensures g == 0 || g <= gas - 1
         ensures GInv()
         ensures old(locked) == locked
-        ensures locked ==> old(balances) == balances && old(totalAmount) == totalAmount
+        ensures old(locked) ==> old(balances) == balances && old(totalAmount) == totalAmount
 
         decreases gas
-        modifies this`locked, this`balances, this`extFailed, this`totalAmount
+        modifies this`locked, this`balances, this`totalAmount
     {
         if locked {
             return (if gas >= 1 then gas - 1 else 0), Revert();
@@ -157,7 +154,7 @@ class TokenRevertExternalMutex extends Account {
         ensures g == 0 || g <= gas - 1
         ensures GInv()
         ensures old(locked) == locked
-        ensures locked ==> old(balances) == balances && old(totalAmount) == totalAmount
+        ensures old(locked) ==> old(balances) == balances && old(totalAmount) == totalAmount
 
         modifies this`balances, this`totalAmount, this`locked
         decreases gas 
@@ -195,9 +192,9 @@ class TokenRevertExternalMutex extends Account {
         ensures GInv()
         ensures g == 0 ||  g <= gas - 1 
         ensures old(locked) == locked
-        ensures locked ==> old(balances) == balances && old(totalAmount) == totalAmount
+        ensures old(locked) ==> old(balances) == balances && old(totalAmount) == totalAmount
 
-        modifies this`locked, this`balances, this`totalAmount, this`extFailed
+        modifies this`locked, this`balances, this`totalAmount
         decreases gas 
     {
         g := gas; 

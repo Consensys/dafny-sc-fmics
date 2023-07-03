@@ -86,7 +86,6 @@ class Token extends Account {
         ensures to != from ==> balances[to] >= amount
         ensures to == from ==> balances == old(balances)
 
-        decreases gas
         modifies this
     {
         balance := balance + msg.value;
@@ -117,8 +116,6 @@ class Token extends Account {
         ensures GInv()
 
         modifies this`balances, this`totalAmount
-        decreases gas
-
     {
         //  Use lemma.
         mapAdd(balances, to, amount as nat);

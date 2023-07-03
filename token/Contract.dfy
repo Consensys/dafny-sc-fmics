@@ -17,7 +17,7 @@ include "../utils/NonNativeTypes.dfy"
 import opened NonNativeTypes
 
 /** Provide a balance. */
-trait /*{:termination false} */Account { 
+trait Account {
     /** Balance of the account. */  
     var balance : uint256
 
