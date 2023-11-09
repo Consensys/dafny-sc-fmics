@@ -234,6 +234,7 @@ class SimpleAuctionRevertExternal extends Account {
         modifies this, msg.sender`balance, Repr, beneficiary`balance
         decreases gas 
     {
+        g := gas;
         if !(
             && msg.sender in pendingReturns 
             && this != msg.sender
