@@ -5,7 +5,7 @@ This repository contains examples of smart contracts specified and verified with
 
 # How to check the proofs?
 
-We have checked the proofs with Dafny 3.5.0.
+We have checked the proofs with Dafny 4.3.0.
 To mechanically check the proofs, it suffices to run the Dafny verifier on the contracts.
 We explain in this section how to do so.
 
@@ -15,11 +15,11 @@ Pre-requisites:
 * or alternatively install VsCode and the [Dafny VsCode plugin](https://marketplace.visualstudio.com/items?itemName=dafny-lang.ide-vscode) 
 * clone or fork this repository.
 
-If you use the VsCode plugin, opening the `*.dfy` file should autoamtically start the verification process.
+If you use the VsCode plugin, opening the `*.dfy` file should automatically start the verification process.
 
 Assuming you have a running Dafny compiler, called `dafny`, you may use the following command line to check a `*.dfy` file:
 ```
-> dafny /dafnyVerify:1 /compile:0  filename.dfy
+> dafny verify  filename.dfy
 ...
 
 Dafny program verifier finished with 10 verified, 0 errors
@@ -27,7 +27,7 @@ Dafny program verifier finished with 10 verified, 0 errors
 
 For some examples, it is also possible to run a program (or test) and the command is:
 ```
-> dafny /noVerify /compile:4 filename.dfy
+> dafny run filename.dfy
 ...
 
 ```
@@ -36,14 +36,14 @@ This will compile (in memory) and run the `Main` method in `filename.dfy`.
 # Example: the Token contract.
 To verify and run the `Token` contract versions in the terminal use the following commands:
 ```
-> dafny /dafnyVerify:1 /compile:0 token/token.dfy 
+> dafny verify token/token.dfy
 ...
-> dafny /dafnyVerify:1 /compile:0 token/token-with-revert.dfy 
+> dafny verify token/token-with-revert.dfy
 ...
 Dafny program verifier finished with 9 verified, 0 errors
-> dafny /dafnyVerify:1 /compile:0 token/token-with-revert-external.dfy 
+> dafny verify token/token-with-revert-external.dfy
 ...
->dafny /noVerify:1 /compile:4 token/token-with-callback-example.dfy
+> dafny run token/token-with-callback-example.dfy
 Dafny program verifier did not attempt verification
 Running...
 

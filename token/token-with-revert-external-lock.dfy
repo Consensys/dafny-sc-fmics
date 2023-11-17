@@ -48,13 +48,13 @@ class TokenRevertExternalMutex extends Account {
      *  Contract invariant. 
      *  The total amount is preserved by each method call.
      */
-    predicate GInv2()
+    ghost predicate GInv2()
         reads this`totalAmount, this`balances
     {
         totalAmount == sum(balances)
     }
 
-    predicate GInv() 
+    ghost predicate GInv()
         reads this`totalAmount, this`balances, this`locked
     {
         (locked == true) || totalAmount == sum(balances)

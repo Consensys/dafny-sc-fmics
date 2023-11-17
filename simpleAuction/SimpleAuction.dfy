@@ -21,7 +21,7 @@ import opened NonNativeTypes
 datatype Option<T> = None() | Some(v: T) 
 
 /**  Decrement bounded by zero. */
-function method dec0(n: nat): nat { if n >= 1 then n - 1 else 0 }
+function dec0(n: nat): nat { if n >= 1 then n - 1 else 0 }
 
 /**
  *  The Simple Open Auction example.
@@ -78,7 +78,7 @@ class SimpleAuction extends Account {
     /**
      *  Contract invariant.
      */
-    predicate GInv()
+    ghost predicate GInv()
         reads this
     {
         //  the contract object `this` and the beneficiary are different accounts.

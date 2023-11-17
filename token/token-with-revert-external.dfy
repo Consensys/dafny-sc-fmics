@@ -46,7 +46,7 @@ class TokenRevertExternal extends Account {
      *  Contract invariant. 
      *  The total amount is preserved by each method call.
      */
-    predicate GInv() 
+    ghost predicate GInv()
         reads this`totalAmount, this`balances
     {
         totalAmount == sum(balances)

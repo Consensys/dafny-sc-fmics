@@ -42,7 +42,7 @@ class Token extends Account {
      *  Contract invariant. 
      *  The total amount is preserved by each method call.
      */
-    predicate GInv() 
+    ghost predicate GInv()
         reads this`totalAmount, this`balances
     {
         totalAmount == sum(balances)
@@ -74,7 +74,7 @@ class Token extends Account {
     method transfer(from: Address, to: Address, amount: uint256, msg: Msg, gas: nat) returns (g: nat)
         requires from in balances
         requires gas >= 1
-        requires msg.value == 0;
+        requires msg.value == 0
         requires balances[from] >= amount && msg.sender == from 
         requires to !in balances ||  balances[to] as nat + amount as nat <= MAX_UINT256
         requires msg.sender == from 

@@ -24,7 +24,7 @@ datatype Option<T> = None() | Some(v: T)
 datatype Try<T> = Success(v: T) | Revert()
 
 /**  Decrement bounded by zero. */
-function method dec0(n: nat): nat { if n >= 1 then n - 1 else 0 }
+function dec0(n: nat): nat { if n >= 1 then n - 1 else 0 }
 
 /**
  *  The Simple Open Auction example.

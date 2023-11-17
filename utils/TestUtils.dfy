@@ -24,24 +24,24 @@ module TestUtils  {
             Success()
         |   Failure(msg: string)
     {
-        function method IsFailure(): bool { Failure? }
-        function method PropagateFailure(): TestStatus { this }
+        function IsFailure(): bool { Failure? }
+        function PropagateFailure(): TestStatus { this }
     }
 
     /**
      *  C# strings for colour selection.
      */
-    const RED := "\u001B[31m"
-    const GREEN := "\u001B[32m"
-    const YELLOW := "\u001B[33m"
-    const BLUE := "\u001B[34m"
-    const MAGENTA := "\u001B[35m"
-    const RESET := "\u001B[0m"
+    const RED := "\U{001B}[31m"
+    const GREEN := "\U{001B}[32m"
+    const YELLOW := "\U{001B}[33m"
+    const BLUE := "\U{001B}[34m"
+    const MAGENTA := "\U{001B}[35m"
+    const RESET := "\U{001B}[0m"
 
     /**
      *  Build a test result.
      */
-    function method makeTest(b: bool): TestStatus 
+    function  makeTest(b: bool): TestStatus
     {
         if b then 
             Success()
