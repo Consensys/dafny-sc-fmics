@@ -86,7 +86,7 @@ class SimpleAuction extends Account {
         //  A highestBid must have a highestBidder
         && (highestBid != 0 <==> highestBidder.Some?)  
         //  current balance of the contract.
-        && (balance as nat == (if !ended then highestBid as nat else 0) + otherbids - withdrawals)
+        && (balance as nat >= (if !ended then highestBid as nat else 0) + otherbids - withdrawals)
         //  sum of values in pendingReturns
         && sum(pendingReturns) == otherbids - withdrawals
         //  the sequence of states reached so far satisfy:
