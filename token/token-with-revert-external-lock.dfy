@@ -250,7 +250,7 @@ function sum(m: map<Address, uint256>): nat
     *  @param  k   A key.
     *  @param  v   A value. 
     *
-    *  If the value `m` at key `k` is incremented by `v` then sum(m) is incremented by `v` too.
+    *  If the value `v0` at key `k` is incremented by `v` then sum(m) is incremented by `v` too.
     */
 lemma mapAdd(m: map<Address, uint256>, k: Address, v: nat)
     requires (if k in m then m[k] else 0) as nat + v <= MAX_UINT256
@@ -268,13 +268,13 @@ lemma mapAdd(m: map<Address, uint256>, k: Address, v: nat)
     *
     *  Transfering `v` from key `k1` to key k2` preserves sum(m). 
     */
-lemma mapAddSub(m: map<Address, uint256>, k1: Address, k2: Address, v: uint256)
-    requires k1 in m 
-    requires m[k1] >= v 
-    requires  (if k2 in m then m[k2] else 0) as nat + v as nat <= MAX_UINT256
+lemma mapAddSub(m: map<Address, uint256>, from: Address, to: Address, v: uint256)
+    requires from in m
+    requires m[from] >= v
+    requires  (if to in m then m[to] else 0) as nat + v as nat <= MAX_UINT256
     //  sum(m ++ [k2, v] ++ [k1, -v]) == sum(v)
-    ensures sum(m[k2 := ((if k2 in m then m[k2] else 0) + v) as uint256][k1 := m[k1] - v]) == sum(m)
-    ensures k1 == k2 ==>  m[k2 := ((if k2 in m then m[k2] else 0) + v) as uint256][k1 := m[k1] - v] == m 
+    ensures sum(m[to := ((if to in m then m[to] else 0) + v) as uint256][from := m[from] - v]) == sum(m)
+    ensures from == to ==>  m[to := ((if to in m then m[to] else 0) + v) as uint256][from := m[from] - v] == m
 
 
 

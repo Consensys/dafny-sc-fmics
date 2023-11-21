@@ -13,7 +13,7 @@
  */
 
 include "../utils/NonNativeTypes.dfy"
-include "./Contract.dfy" 
+include "./Contract.dfy"
 include "../utils/TestUtils.dfy"
 
 import opened NonNativeTypes 
