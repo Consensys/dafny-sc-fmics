@@ -98,7 +98,6 @@ class TokenRevert extends Account {
         ensures minter == msg.sender
     {
         id := name;
-        isContract := true;
         minter := msg.sender;
         balances := map[]; 
         balance := msg.value;

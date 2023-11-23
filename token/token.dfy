@@ -33,7 +33,7 @@ type Address = Account
  */
 class Token extends Account {
 
-    const minter: Address 
+    const minter: Address   // minter cannot be updated after creation
     var balances : map<Address, uint256>
 
     ghost var totalAmount: nat  
@@ -54,7 +54,6 @@ class Token extends Account {
         ensures balance == msg.value
         ensures minter == msg.sender
     {
-        isContract := true;
         minter := msg.sender;
         balances := map[]; 
         balance := msg.value;
