@@ -29,6 +29,9 @@ trait Account {
     /** Balance of the account. */  
     var balance : uint256
 
+    /** Type of account. */
+    const isContract: bool
+
     /**
      *  Transfer some ETH from `msgSender` to `this`.
      *
@@ -69,4 +72,14 @@ trait Account {
 
 }
 
+/** A user account. */
+class UserAccount extends Account {
+
+    constructor(initialBal: uint256) 
+        ensures balance == initialBal
+    {
+        balance := initialBal;
+        isContract := false;
+    }
+}
 

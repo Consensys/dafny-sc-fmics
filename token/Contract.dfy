@@ -20,11 +20,26 @@ import opened NonNativeTypes
 trait Account {
     /** Balance of the account. */  
     var balance : uint256
+
+    /** Type of account. */
+    const isContract: bool
+}
+
+/** A user account. */
+class UserAccount extends Account {
+
+    constructor(initialBal: uint256) 
+        ensures balance == initialBal
+    {
+        balance := initialBal;
+        isContract := false;
+    }
 }
 
 class GenericAccount extends Account {
     constructor Havoc() {
         balance := *;
+        isContract := *;
     }
     constructor(){}
 }
