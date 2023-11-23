@@ -61,6 +61,35 @@ class Token extends Account {
     }
 
     /**
+     *  Mint some new tokens.
+     *
+     *  @param  to      Target Address receiving the newly minted tokens.
+     *  @param  amount  The amount of tokens.
+     *  @param  msg     The message value.
+     *  @param  gas     The gas allocated to the execution.
+     *  @returns        The gas left after executing the call.
+     */
+    method mint(to: Address, amount: uint256, msg: Msg, gas: nat) returns (g: nat)
+        requires msg.sender == minter
+        requires gas >= 1
+        requires to !in balances ||  balances[to] as nat + amount as nat <= MAX_UINT256
+        requires GInv()
+
+        ensures totalAmount == old(totalAmount) + amount as nat
+        ensures GInv()
+
+        modifies this`balances, this`totalAmount
+    {
+        //  Use lemma.
+        mapAdd(balances, to, amount as nat);
+        balances := balances[to := (if to in balances then balances[to] else 0) + amount];
+
+        //  The total amount increases.
+        totalAmount := totalAmount + amount as nat;
+        g := gas - 1;
+    }
+
+    /**
      *  Transfer some tokens from an account to another.
      *
      *  @param  from    Source Address.
@@ -95,37 +124,6 @@ class Token extends Account {
         balances := balances[from := newAmount];
         g := gas - 1;
     }  
-
-    /**
-     *  Mint some new tokens.
-     *
-     *  @param  to      Target Address.
-     *  @param  amount  The amount to receiving the newly minted tokens
-     *  @param  msg     The `msg` content.
-     *  @param  gas     The gas allocated to the execution.
-     *  @returns        The gas left after executing the call.
-     */
-    method mint(to: Address, amount: uint256, msg: Msg, gas: nat) returns (g: nat)
-        requires msg.sender == minter
-        requires gas >= 1
-        requires to !in balances ||  balances[to] as nat + amount as nat <= MAX_UINT256
-        requires GInv()
-
-        ensures totalAmount == old(totalAmount) + amount as nat
-        ensures GInv()
-
-        modifies this`balances, this`totalAmount
-    {
-        //  Use lemma.
-        mapAdd(balances, to, amount as nat);
-        balances := balances[to := (if to in balances then balances[to] else 0) + amount]; 
-
-        //  The total amount increases.
-        totalAmount := totalAmount + amount as nat;
-        g := gas - 1;
-    }
-
-   
 }
 
 //  Helper functions
