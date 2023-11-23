@@ -25,16 +25,7 @@ datatype Try<T> = Success(v: T) | Revert()
 
 type Address = Account  
 
-/**
- *  The Token contract with revert. example from:
- *  Rich Specifications for Ethereum Smart Contract Verification, Christian Bräm et al.
- *  @link{ttps://arxiv.org/abs/2104.10274}
- */
-
-/**
- *  The token example with a re-entrancy vulnerability.
- */
-class TokenRevertExternalMutex extends Account {
+class TokenRevertExternalLock extends Account {
 
     const minter: Address 
     var balances : map<Address, uint256>
@@ -77,7 +68,7 @@ class TokenRevertExternalMutex extends Account {
      *  @param  gas     The gas allocated to the execution.
      *  @returns        The gas left after executing the call and the status of the call.
      */
-    method transfer(from: Address, to: Address, amount: uint256, msg: Msg, gas: nat) returns (g: nat, r: Try<()>)
+    method transferLock(from: Address, to: Address, amount: uint256, msg: Msg, gas: nat) returns (g: nat, r: Try<()>)
 
         requires GInv()
         ensures 
@@ -121,10 +112,6 @@ class TokenRevertExternalMutex extends Account {
     }  
 
 
-
-
-
-
     /**
      *  Mint some new tokens.
      *
@@ -134,7 +121,7 @@ class TokenRevertExternalMutex extends Account {
      *  @param  gas     The gas allocated to the execution.
      *  @returns        The gas left after executing the call and the status of the call.
      */
-    method mint(to: Address, amount: uint256, msg: Msg, gas: nat) returns (g: nat, r: Try<()>)
+    method mintLock(to: Address, amount: uint256, msg: Msg, gas: nat) returns (g: nat, r: Try<()>)
         requires GInv()
         ensures r.Success? ==> !locked 
                                 && (totalAmount == old(totalAmount) + amount as nat)
@@ -200,13 +187,13 @@ class TokenRevertExternalMutex extends Account {
             var to: Address := havoc();
             var amount: uint256 := havoc(); 
             var msg: Msg := havoc();
-            g, r := transfer(from, to, amount, msg, g - 1);
+            g, r := transferLock(from, to, amount, msg, g - 1);
         } else if k % 3 == 1 && g >= 1 {
             //  re-entrant call to mint. 
             var to: Address := havoc();
             var amount: uint256 := havoc();
             var msg: Msg := havoc();
-            g, r := mint(to, amount, msg, g - 1);
+            g, r := mintLock(to, amount, msg, g - 1);
         } 
         //  k % 3 == 2, no re-entrant call.
         //  Possible new external call
