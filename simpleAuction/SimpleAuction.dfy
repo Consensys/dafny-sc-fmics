@@ -278,7 +278,7 @@ class SimpleAuction extends Account {
      *  @param  k   A key.
      *  @param  v   A value. 
      *
-     *  If the value `m` at key `k` is removed, then sum(m) is decreased by `v` too.
+     *  If the value `v` at key `k` is removed, then sum(m) is decreased by `v` too.
      */
     lemma mapResetKey(m: map<Address, uint256>, k: Address)
         requires k in m

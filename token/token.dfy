@@ -96,7 +96,7 @@ class Token extends Account {
      *  @param  from    Source Address.
      *  @param  to      Target Address.
      *  @param  amount  The amount to be transfered from `from` to `to`.
-     *  @param  msg     The `msg` content.
+     *  @param  msg     The message value.
      *  @param  gas     The gas allocated to the execution.
      *  @returns        The gas left after executing the call.
      */

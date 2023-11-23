@@ -51,7 +51,7 @@ class TokenRevertExternalMutex extends Account {
     ghost predicate GInv()
         reads this`totalAmount, this`balances, this`locked
     {
-        (locked == true) || totalAmount == sum(balances)
+        locked || totalAmount == sum(balances)
     }
 
     /** Initialise contract.  */
