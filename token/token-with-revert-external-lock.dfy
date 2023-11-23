@@ -59,6 +59,51 @@ class TokenRevertExternalLock extends Account {
     }
 
     /**
+     *  Mint some new tokens.
+     *
+     *  @param  to      Target Address.
+     *  @param  amount  The amount to receiving the newly minted tokens
+     *  @param  msg     The `msg` content.
+     *  @param  gas     The gas allocated to the execution.
+     *  @returns        The gas left after executing the call and the status of the call.
+     */
+    method mintLock(to: Address, amount: uint256, msg: Msg, gas: nat) returns (g: nat, r: Try<()>)
+        requires GInv()
+        ensures r.Success? ==> !locked
+                                && (totalAmount == old(totalAmount) + amount as nat)
+        ensures r.Revert? <==> locked
+                                || (!(msg.sender == minter && gas >= 1 && (to !in old(balances)
+                                || old(balances[to]) as nat + amount as nat <= MAX_UINT256)))
+        //  state unchanged on a revert.
+        ensures r.Revert? ==> balances == old(balances)
+                                && totalAmount == old(totalAmount)
+        ensures g == 0 || g <= gas - 1
+        ensures GInv()
+        ensures old(locked) == locked
+        ensures old(locked) ==> old(balances) == balances && old(totalAmount) == totalAmount
+
+        modifies this`balances, this`totalAmount, this`locked
+        decreases gas
+    {
+        if locked {
+            return (if gas >= 1 then gas - 1 else 0), Revert();
+        }
+        if !(msg.sender == minter && gas >= 1 && (to !in balances ||  balances[to] as nat + amount as nat <= MAX_UINT256)) {
+            return (if gas >= 1 then gas - 1 else 0), Revert();
+        }
+
+        //  Use lemma.
+        mapAdd(balances, to, amount as nat);
+        locked := true;
+        balances := balances[to := (if to in balances then balances[to] else 0) + amount];
+
+        //  The total amount increases.
+        totalAmount := totalAmount + amount as nat;
+        g, r := gas - 1, Success(());
+        locked := false;
+    }
+
+    /**
      *  Transfer some tokens from an account to another.
      *
      *  @param  from    Source Address.
@@ -110,53 +155,6 @@ class TokenRevertExternalLock extends Account {
         g, r := (if g1 >= 1 then g1 - 1 else 0), Success(());
 
     }  
-
-
-    /**
-     *  Mint some new tokens.
-     *
-     *  @param  to      Target Address.
-     *  @param  amount  The amount to receiving the newly minted tokens
-     *  @param  msg     The `msg` content.
-     *  @param  gas     The gas allocated to the execution.
-     *  @returns        The gas left after executing the call and the status of the call.
-     */
-    method mintLock(to: Address, amount: uint256, msg: Msg, gas: nat) returns (g: nat, r: Try<()>)
-        requires GInv()
-        ensures r.Success? ==> !locked 
-                                && (totalAmount == old(totalAmount) + amount as nat)
-        ensures r.Revert? <==> locked 
-                                || (!(msg.sender == minter && gas >= 1 && (to !in old(balances) 
-                                || old(balances[to]) as nat + amount as nat <= MAX_UINT256)))
-        //  state unchanged on a revert.
-        ensures r.Revert? ==> balances == old(balances) 
-                                && totalAmount == old(totalAmount)
-        ensures g == 0 || g <= gas - 1
-        ensures GInv()
-        ensures old(locked) == locked
-        ensures old(locked) ==> old(balances) == balances && old(totalAmount) == totalAmount
-
-        modifies this`balances, this`totalAmount, this`locked
-        decreases gas 
-    {
-        if locked {
-            return (if gas >= 1 then gas - 1 else 0), Revert();
-        }
-        if !(msg.sender == minter && gas >= 1 && (to !in balances ||  balances[to] as nat + amount as nat <= MAX_UINT256)) {
-            return (if gas >= 1 then gas - 1 else 0), Revert();
-        }
-
-        //  Use lemma.
-        mapAdd(balances, to, amount as nat);
-        locked := true;
-        balances := balances[to := (if to in balances then balances[to] else 0) + amount]; 
-
-        //  The total amount increases.
-        totalAmount := totalAmount + amount as nat;
-        g, r := gas - 1, Success(());
-        locked := false;
-    }
-
 
     /**
      *  Simulate a potential re-entrant call from an externalCall.
