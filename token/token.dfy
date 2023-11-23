@@ -77,6 +77,7 @@ class Token extends Account {
 
         ensures totalAmount == old(totalAmount) + amount as nat
         ensures GInv()
+        ensures g == 0 || g <= gas - 1
 
         modifies this`balances, this`totalAmount
     {
@@ -113,6 +114,7 @@ class Token extends Account {
         ensures to in balances 
         ensures to != from ==> balances[to] >= amount
         ensures to == from ==> balances == old(balances)
+        ensures g == 0 || g <= gas - 1
 
         modifies this
     {

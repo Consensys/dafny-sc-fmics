@@ -203,7 +203,7 @@ class TokenRevertExternal extends Account {
     method externalCall(gas: nat) returns (g: nat, r: Try<()>)
         requires GInv()
         ensures GInv()
-        ensures g == 0 ||  g <= gas - 1 
+        ensures g == 0 || g <= gas - 1
         modifies this
         decreases gas 
     {
@@ -263,7 +263,7 @@ class TokenRevertExternal extends Account {
     method externalCall2(gas: nat) returns (g: nat, r: Try<()>)
         requires GInv()
         ensures GInv()
-        ensures g == 0 ||  g <= gas - 1 
+        ensures g == 0 || g <= gas - 1
         modifies this
         decreases gas 
     {
@@ -322,7 +322,7 @@ class TokenRevertExternal extends Account {
     method externalCall3(gas: nat) returns (g: nat, r: Try<()>)
         requires GInv()
         ensures GInv()
-        ensures g == 0 ||  g <= gas - 1 
+        ensures g == 0 || g <= gas - 1
         modifies this
         decreases gas 
     {
@@ -416,7 +416,7 @@ class TokenRevertExternal extends Account {
     method externalROCall3(gas: nat) returns (g: nat, r: Try<()>)
         //requires GInv()
         //ensures GInv()
-        ensures g == 0 ||  g <= gas - 1
+        ensures g == 0 || g <= gas - 1
         modifies this
         decreases gas
     {

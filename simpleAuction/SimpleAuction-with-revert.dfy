@@ -161,6 +161,7 @@ class SimpleAuctionRevert extends Account {
         ensures r.Success? ==> old(balance) as nat + msg.value as nat <= MAX_UINT256 as nat
         ensures r.Success? ==> balance >= old(balance) + msg.value //  balance in the contract increases. 
         ensures GInv()
+        ensures g == 0 || g <= gas - 1
     
         modifies this, msg.sender`balance
     {
@@ -219,6 +220,7 @@ class SimpleAuctionRevert extends Account {
         ensures r.Revert? ==> states[|states| - 1] == states[|states| - 2]
         ensures states == old(states) + [State(ended, highestBidder, pendingReturns.Keys, highestBid)]
         ensures GInv()
+        ensures g == 0 || g <= gas - 1
 
         modifies this, msg.sender`balance
     {

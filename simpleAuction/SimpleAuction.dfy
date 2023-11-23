@@ -148,6 +148,7 @@ class SimpleAuction extends Account {
         ensures states == old(states) + [State(ended, highestBidder, pendingReturns.Keys, highestBid)]
         ensures balance >= old(balance) + msg.value //  balance in the contract increases. 
         ensures GInv()
+        ensures g == 0 || g <= gas - 1
     
         modifies this, msg.sender`balance
     {
@@ -187,6 +188,7 @@ class SimpleAuction extends Account {
         requires gas >= 2
         ensures states == old(states) + [State(ended, highestBidder, pendingReturns.Keys, highestBid)]
         ensures GInv()
+        ensures g == 0 || g <= gas - 1
 
         modifies this, msg.sender`balance
     {
@@ -235,6 +237,8 @@ class SimpleAuction extends Account {
         ensures beneficiary.balance >= old(beneficiary.balance) + highestBid 
         ensures states == old(states) + [State(true, highestBidder, pendingReturns.Keys, highestBid)]
         ensures GInv()
+        ensures g == 0 || g <= gas - 1
+
         modifies this, beneficiary`balance
     {
         ended := true;
