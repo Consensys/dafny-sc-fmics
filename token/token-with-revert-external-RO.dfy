@@ -115,7 +115,7 @@ class TokenRevertExternal extends Account {
         requires GInv() // ensures a sane context to read balances
         ensures r.Success? <==> gas >= 1
         ensures g == 0 || g <= gas - 1
-        //ensures GInv()
+        ensures GInv()
 
         modifies {}
     {
@@ -173,7 +173,7 @@ class TokenRevertExternal extends Account {
      */
      method externalROCall(gas: nat) returns (g: nat, r: Try<()>)
         requires GInv()
-        //ensures GInv()
+        ensures GInv()
         ensures g == 0 || g <= gas - 1
         modifies {}
         decreases gas

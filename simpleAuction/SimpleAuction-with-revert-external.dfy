@@ -394,7 +394,7 @@ class SimpleAuctionRevertExternal extends Account {
      *  @param  k   A key.
      *  @param  v   A value. 
      *
-     *  If the value `m` at key `k` is incremented by `v` then sum(m) is incremented by `v` too.
+     *  If the value at key `k` is incremented by `v` then sum(m) is incremented by `v` too.
      */
     lemma mapAdd(m: map<Address, uint256>, k: Address, v: nat)
         requires (if k in m then m[k] else 0) as nat + v <= MAX_UINT256
@@ -409,7 +409,7 @@ class SimpleAuctionRevertExternal extends Account {
      *  @param  k   A key.
      *  @param  v   A value. 
      *
-     *  If the value at key `k` is incremented by `v` then sum(m) is incremented by `v` too.
+     *  If the value `v` at key `k` is reset to 0, then sum(m) is decreased by `v` too.
      */
     lemma mapResetKey(m: map<Address, uint256>, k: Address)
         requires k in m
