@@ -146,7 +146,7 @@ function sum(m: map<Address, uint256>): nat
     *  @param  k   A key.
     *  @param  v   A value. 
     *
-    *  If the value `m` at key `k` is incremented by `v` then sum(m) is incremented by `v` too.
+    *  If the value at key `k` is incremented by `v` then sum(m) is incremented by `v` too.
     */
 lemma mapAdd(m: map<Address, uint256>, k: Address, v: nat)
     requires (if k in m then m[k] else 0) as nat + v <= MAX_UINT256

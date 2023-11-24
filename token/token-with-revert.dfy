@@ -26,7 +26,7 @@ datatype Try<T> = Success(v: T) | Revert()
 type Address = Account  
 
 /**
- *  The Token contract with revert. example from:
+ *  The Token contract with revert. Example from:
  *  Rich Specifications for Ethereum Smart Contract Verification, Christian Bräm et al.
  *  @link{ttps://arxiv.org/abs/2104.10274}
  */
@@ -71,7 +71,7 @@ class TokenRevert extends Account {
      *  @param  from    Source Address.
      *  @param  to      Target Address.
      *  @param  amount  The amount to be transfered from `from` to `to`.
-     *  @param  msg     The `msg` content.
+     *  @param  msg     The message value.
      *  @param  gas     The gas allocated to the execution.
      *  @returns        The gas left after executing the call.
      */
@@ -155,7 +155,7 @@ function sum(m: map<Address, uint256>): nat
     *  @param  k   A key.
     *  @param  v   A value. 
     *
-    *  If the value `m` at key `k` is incremented by `v` then sum(m) is incremented by `v` too.
+    *  If the value at key `k` is incremented by `v` then sum(m) is incremented by `v` too.
     */
 lemma mapAdd(m: map<Address, uint256>, k: Address, v: nat)
     requires (if k in m then m[k] else 0) as nat + v <= MAX_UINT256
