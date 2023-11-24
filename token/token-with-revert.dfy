@@ -66,6 +66,39 @@ class TokenRevert extends Account {
     }
 
     /**
+     *  Mint some new tokens.
+     *
+     *  @param  to      Target Address.
+     *  @param  amount  The amount of newly minted tokens.
+     *  @param  msg     The message value.
+     *  @param  gas     The gas allocated to the execution.
+     *  @returns        The gas left after executing the call.
+     */
+    method mint(to: Address, amount: uint256, msg: Msg, gas: nat) returns (g: nat, r: Try<()>)
+        requires GInv()
+        ensures r.Success? ==> totalAmount == old(totalAmount) + amount as nat
+        ensures r.Revert? <==> !(msg.sender == minter && gas >= 1 && (to !in old(balances) ||  old(balances[to]) as nat + amount as nat <= MAX_UINT256))
+        //  state unchanged on a revert.
+        ensures r.Revert? ==> balances == old(balances)
+        ensures g == 0 || g <= gas - 1
+        ensures GInv()
+
+        modifies this`balances, this`totalAmount
+        decreases gas
+    {
+        if !(msg.sender == minter && gas >= 1 && (to !in balances ||  balances[to] as nat + amount as nat <= MAX_UINT256)) {
+            return (if gas >= 1 then gas - 1 else 0), Revert();
+        }
+        //  Use lemma.
+        mapAdd(balances, to, amount as nat);
+        balances := balances[to := (if to in balances then balances[to] else 0) + amount];
+
+        //  The total amount increases.
+        totalAmount := totalAmount + amount as nat;
+        g, r := gas - 1, Success(());
+    }
+
+    /**
      *  Transfer some tokens from an account to another.
      *
      *  @param  from    Source Address.
@@ -103,39 +136,6 @@ class TokenRevert extends Account {
         balances := balances[from := newAmount];
         g, r := gas - 1, Success(());
     }  
-
-    /**
-     *  Mint some new tokens.
-     *
-     *  @param  to      Target Address.
-     *  @param  amount  The amount to receiving the newly minted tokens
-     *  @param  msg     The `msg` content.
-     *  @param  gas     The gas allocated to the execution.
-     *  @returns        The gas left after executing the call.
-     */
-    method mint(to: Address, amount: uint256, msg: Msg, gas: nat) returns (g: nat, r: Try<()>)
-        requires GInv()
-        ensures r.Success? ==> totalAmount == old(totalAmount) + amount as nat
-        ensures r.Revert? <==> !(msg.sender == minter && gas >= 1 && (to !in old(balances) ||  old(balances[to]) as nat + amount as nat <= MAX_UINT256))
-        //  state unchanged on a revert.
-        ensures r.Revert? ==> balances == old(balances) 
-        ensures g == 0 || g <= gas - 1
-        ensures GInv()
-
-        modifies this`balances, this`totalAmount
-        decreases gas 
-    {
-        if !(msg.sender == minter && gas >= 1 && (to !in balances ||  balances[to] as nat + amount as nat <= MAX_UINT256)) {
-            return (if gas >= 1 then gas - 1 else 0), Revert();
-        }
-        //  Use lemma.
-        mapAdd(balances, to, amount as nat);
-        balances := balances[to := (if to in balances then balances[to] else 0) + amount]; 
-
-        //  The total amount increases.
-        totalAmount := totalAmount + amount as nat;
-        g, r := gas - 1, Success(());
-    }
 }
 
 //  Helper functions
